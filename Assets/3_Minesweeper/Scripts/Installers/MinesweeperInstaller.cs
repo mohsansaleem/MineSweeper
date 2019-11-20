@@ -11,7 +11,7 @@ namespace PM.Minesweeper
         
         public override void InstallBindings()
         {
-            Container.Bind<MinesweeperModel>().AsSingle();
+            Container.Bind<IMinesweeperModel>().To<MinesweeperModel>().AsSingle();
 
             Container.Bind<IMinesweeperView>().To<MinesweeperView>().FromInstance(_minesweeperView).AsSingle();
             

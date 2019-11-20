@@ -4,19 +4,26 @@ using Newtonsoft.Json;
 using UniRx;
 using UnityEngine;
 using Zenject;
+using Random = System.Random;
 
 namespace PM.Minesweeper
 {
-    public class MinesweeperModel
+    public class MinesweeperModel : IMinesweeperModel
     {
-        public readonly ReactiveProperty<EGameState> GameState;
-        public MineFieldCell[,] MineFieldGrid;
+        private readonly ReactiveProperty<EGameState> _gameState;
+        private MineFieldCell[,] MineFieldGrid;
 
         public MinesweeperModel()
         {
-            GameState = new ReactiveProperty<EGameState>(EGameState.Setup);
+            _gameState = new ReactiveProperty<EGameState>(EGameState.Setup);
         }
 
+        public EGameState GameState
+        {
+            get => _gameState.Value;
+            set => _gameState.Value = value;
+        }
+        
         public void CreateGrid(uint sizeX, uint sizeY)
         {
             MineFieldGrid = new MineFieldCell[sizeX, sizeY];
@@ -26,6 +33,43 @@ namespace PM.Minesweeper
                 for (uint indexY = 0; indexY < sizeY; indexY++)
                 {
                     MineFieldGrid[indexX, indexY] = new MineFieldCell(indexX, indexY);
+                }
+            }
+        }
+        
+        public void PopulateGrid(uint x, uint y, uint settingsMinesCount)
+        {
+            // Placing Mines
+            Random random = new Random();
+
+            uint placed = settingsMinesCount;
+            while (placed > 0)
+            {
+                uint r = (uint) random.Next((int) x);
+                uint c = (uint) random.Next((int) y);
+                if (MineFieldGrid[r, c].Data.Value != EMineFieldCellData.MINE &&
+                    (r > x + 1 || r < x - 1) &&
+                    (c > y + 1 || c < y - 1))
+                {
+                    MineFieldGrid[r, c].Data.Value = EMineFieldCellData.MINE;
+
+                    UpdateSiblingsCount(r, c, x, y);
+
+                    placed--;
+                }
+            }
+        }
+        
+        private void UpdateSiblingsCount(uint x, uint y, uint sizeX, uint sizeY)
+        {
+            for (uint r = x > 0 ? x - 1 : x; r < x + 2 && r < sizeX; r++)
+            {
+                for (uint c = y > 0 ? y - 1 : y; c < y + 2 && c < sizeY; c++)
+                {
+                    if (!(r == x && c == y) && MineFieldGrid[r, c].Data.Value != EMineFieldCellData.MINE)
+                    {
+                        MineFieldGrid[r, c].Data.Value++;
+                    }
                 }
             }
         }
@@ -43,12 +87,57 @@ namespace PM.Minesweeper
                 }
             }
         }
-
-
-        public enum EGameState
+        
+        public void ToggleFlagged(uint x, uint y)
         {
-            Setup,
-            Playing
+            MineFieldGrid[x, y].ToggleFlagged();
         }
+
+        public EMineFieldCellData GetMineFieldGridCellData(uint x, uint y)
+        {
+            return MineFieldGrid[x, y].Data.Value;
+        }
+
+        public void SetMineFieldGridCellData(uint x, uint y, EMineFieldCellData eMineFieldCellData)
+        {
+            MineFieldGrid[x, y].Data.Value = eMineFieldCellData;
+        }
+
+        public bool GetMineFieldCellOpenedStatus(uint x, uint y)
+        {
+            return MineFieldGrid[x, y].IsOpened.Value;
+        }
+
+        public void SetMineFieldCellOpenedStatus(uint x, uint y, bool value)
+        {
+            MineFieldGrid[x, y].IsOpened.Value = value;
+        }
+        
+        // Subscribes.
+        public IDisposable SubscribeGameState(Action<EGameState> onStateChanged)
+        {
+            return _gameState.Subscribe(onStateChanged);
+        }
+
+        public IDisposable SubscribeMineFieldGridCellData(uint x, uint y, Action<EMineFieldCellData> action)
+        {
+            return MineFieldGrid[x, y].Data.Subscribe(action);
+        }
+
+        public IDisposable SubscribeMineFieldGridCellOpened(uint x, uint y, Action<bool> action)
+        {
+            return MineFieldGrid[x, y].IsOpened.Subscribe(action);
+        }
+        
+        public IDisposable SubscribeMineFieldGridCellFlagged(uint x, uint y, Action<bool> action)
+        {
+            return MineFieldGrid[x, y].IsFlagged.Subscribe(action);
+        }
+    }
+
+    public enum EGameState
+    {
+        Setup,
+        Playing
     }
 }

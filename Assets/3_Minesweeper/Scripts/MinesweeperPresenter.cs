@@ -9,12 +9,12 @@ namespace PM.Minesweeper
     public partial class MinesweeperPresenter : StateMachinePresenter
     {
         [Inject] private readonly IMinesweeperView _view;
-        [Inject] private readonly MinesweeperModel _minesweeperModel;
+        [Inject] private readonly IMinesweeperModel _minesweeperModel;
         [Inject] private readonly MinesweeperSettingsInstaller.Settings _settings;
 
         // Actions.
-        private Action<MineFieldCell> OnCellClicked;
-        private Action<MineFieldCell> OnCellRightClicked;
+        private Action<uint, uint> OnCellClicked;
+        private Action<uint, uint> OnCellRightClicked;
 
         public override void Initialize()
         {
@@ -30,7 +30,7 @@ namespace PM.Minesweeper
             // Showing the View.
             _view.Show();
             
-            _minesweeperModel.GameState.Subscribe(OnLoadingProgressChanged).AddTo(Disposables);
+            _minesweeperModel.SubscribeGameState(OnLoadingProgressChanged).AddTo(Disposables);
         }
 
         private void CreateGrid()
@@ -42,40 +42,58 @@ namespace PM.Minesweeper
             {
                 for (uint indexY = 0; indexY < _settings.SizeY; indexY++)
                 {
-                    MineFieldCell mineFieldCell = _minesweeperModel.MineFieldGrid[indexX, indexY];
+                    uint x = indexX;
+                    uint y = indexY;
                     
                     // Binding Models and Views.
-                    BindCell(mineFieldCell, indexX, indexY);
+                    BindCell(indexX, indexY);
                     
                     // Binding Input.
-                    _view.SubcribleOnCellClick(indexX, indexY, ()=> OnCellClicked?.Invoke(mineFieldCell));
-                    _view.SubcribleOnCellRightClick(indexX, indexY, () => OnCellRightClicked?.Invoke(mineFieldCell));
+                    _view.SubcribleOnCellClick(indexX, indexY, ()=> OnCellClicked?.Invoke(x, y));
+                    _view.SubcribleOnCellRightClick(indexX, indexY, () => OnCellRightClicked?.Invoke(x, y));
 
                 }
             }
         }
 
-        private void BindCell(MineFieldCell cell, uint indexX, uint indexY)
+        private void BindCell(uint indexX, uint indexY)
         {
-            cell.Data.Subscribe((e) =>
+            //var cell = _minesweeperModel.MineFieldGrid[indexX, indexY];
+            _minesweeperModel.SubscribeMineFieldGridCellData(indexX, indexY, (eMineFieldCellData) =>
             {
-                _view.SetCellData(indexX, indexY, e);
+                _view.SetCellData(indexX, indexY, eMineFieldCellData);
                 
             }).AddTo(Disposables);
             
-            cell.IsFlagged.Subscribe(isFlagged => _view.SetCellFlagged(indexX, indexY, isFlagged)).AddTo(Disposables);
-            cell.IsOpened.Subscribe(isOpened => _view.SetCellContentVisible(indexX, indexY, isOpened)).AddTo(Disposables);
+            
+            _minesweeperModel.SubscribeMineFieldGridCellFlagged(indexX,
+                                                                indexY,
+                                                                isFlagged =>
+                                                                {
+                                                                    _view.SetCellFlagged(indexX, indexY, isFlagged);
+                                                                })
+                .AddTo(Disposables);
+            
+            _minesweeperModel.SubscribeMineFieldGridCellOpened(indexX,
+                                                               indexY,
+                                                               isOpened =>
+                                                               {
+                                                                   _view.SetCellContentVisible(indexX, 
+                                                                                               indexY,
+                                                                                               isOpened);
+                                                               })
+                .AddTo(Disposables);
         }
         
-        private void OnLoadingProgressChanged(MinesweeperModel.EGameState loadingProgress)
+        private void OnLoadingProgressChanged(EGameState loadingProgress)
         {
             Type targetType = null;
             switch (loadingProgress)
             {
-                case MinesweeperModel.EGameState.Setup:
+                case EGameState.Setup:
                     targetType = typeof(MinesweeperStateSetup);
                     break;
-                case MinesweeperModel.EGameState.Playing:
+                case EGameState.Playing:
                     targetType = typeof(MinesweeperStatePlaying);
                     break;
                 default:

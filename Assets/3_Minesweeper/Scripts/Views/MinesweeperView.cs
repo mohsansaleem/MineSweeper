@@ -43,6 +43,11 @@ namespace PM.Minesweeper
             gameObject.SetActive(true);
         }
 
+        public void Hide()
+        {
+            gameObject.SetActive(false);
+        }
+        
         public void ShowMessage(string message, Action action)
         {
             MessageView.Show(message, action);
@@ -53,20 +58,7 @@ namespace PM.Minesweeper
             MessageView.Hide();
         }
 
-        public void Hide()
-        {
-            gameObject.SetActive(false);
-        }
-
-        public void SubcribleOnCellClick(uint indexX, uint indexY, Action action)
-        {
-            CellViews[indexX, indexY].CellButton.onClick.AddListener(()=> action?.Invoke());
-        }
-
-        public void SubcribleOnCellRightClick(uint indexX, uint indexY, Action action)
-        {
-            CellViews[indexX, indexY].OnRightClicked = action;
-        }
+        #region Setters
 
         public void SetCellData(uint cellX, uint cellY, EMineFieldCellData eMineFieldCellData)
         {
@@ -94,20 +86,21 @@ namespace PM.Minesweeper
         {
             CellViews[cellX, cellY].IsContentVisible = isOpened;
         }
-    }
+        
+        #endregion
 
-    public interface IMinesweeperView
-    {
-        void CreateGridUI(uint settingsSizeX, uint settingsSizeY);
-        void Show();
-        void ShowMessage(string message, Action action);
-        void HideMessage();
-        void Hide();
-        void SubcribleOnCellClick(uint indexX, uint indexY, Action action);
-        void SubcribleOnCellRightClick(uint indexX, uint indexY, Action action);
-        void SetCellData(uint cellX, uint cellY, EMineFieldCellData eMineFieldCellData);
-        void SetCellFlagged(uint cellX, uint cellY, bool isFlagged);
-        void SetCellContentVisible(uint cellX, uint cellY, bool isOpened);
+
+        #region Subscription
+        public void SubcribleOnCellClick(uint indexX, uint indexY, Action action)
+        {
+            CellViews[indexX, indexY].CellButton.onClick.AddListener(()=> action?.Invoke());
+        }
+
+        public void SubcribleOnCellRightClick(uint indexX, uint indexY, Action action)
+        {
+            CellViews[indexX, indexY].OnRightClicked = action;
+        }
+        #endregion
     }
 }
 

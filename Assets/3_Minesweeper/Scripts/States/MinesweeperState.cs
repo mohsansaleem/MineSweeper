@@ -8,7 +8,7 @@ namespace PM.Minesweeper
         {
             protected readonly MinesweeperPresenter Presenter;
             protected readonly IMinesweeperView View;
-            protected readonly MinesweeperModel MinesweeperModel;
+            protected readonly IMinesweeperModel MinesweeperModel;
             
             protected readonly MinesweeperSettingsInstaller.Settings Settings;
             

@@ -26,27 +26,27 @@ namespace PM.Minesweeper
             {
                 UnveilEmptyCells(x, y);
 
-                if (MinesweeperModel.MineFieldGrid[x, y].Data.Value == EMineFieldCellData.MINE)
+                if (MinesweeperModel.GetMineFieldGridCellData(x, y) == EMineFieldCellData.MINE)
                 {
                     View.ShowMessage("<Color=Red>You Hit a Mine.</Color>\n\n <b>Restart?</b>", 
-                        (() => MinesweeperModel.GameState.Value = MinesweeperModel.EGameState.Setup));
+                        (() => MinesweeperModel.GameState = EGameState.Setup));
                 }
                 else if(OpenedCells + Settings.MinesCount == Settings.SizeX * Settings.SizeY)
                 {
                     View.ShowMessage("<Color=Green>You won.</Color> \n\n <b>Replay?</b>", 
-                        (() => MinesweeperModel.GameState.Value = MinesweeperModel.EGameState.Setup));
+                        (() => MinesweeperModel.GameState = EGameState.Setup));
                 }
             }
 
             private void UnveilEmptyCells(uint x, uint y)
             {
-                if (MinesweeperModel.MineFieldGrid[x, y].IsOpened.Value)
+                if (MinesweeperModel.GetMineFieldCellOpenedStatus(x, y))
                     return;
 
-                MinesweeperModel.MineFieldGrid[x, y].IsOpened.Value = true;
+                MinesweeperModel.SetMineFieldCellOpenedStatus(x, y, true);
                 OpenedCells++;
                 
-                if (MinesweeperModel.MineFieldGrid[x, y].Data.Value != EMineFieldCellData.M0)
+                if (MinesweeperModel.GetMineFieldGridCellData(x, y) != EMineFieldCellData.M0)
                     return;
 
                 for (uint r = x > 0 ? x - 1 : x; r < x + 2 && r < Settings.SizeX; r++)
@@ -59,14 +59,14 @@ namespace PM.Minesweeper
                 }
             }
             
-            private void OnCellClicked(MineFieldCell cell)
+            private void OnCellClicked(uint x, uint y)
             {
-                Open(cell.X, cell.Y);
+                Open(x, y);
             }
 
-            private void OnCellRightClicked(MineFieldCell cell)
+            private void OnCellRightClicked(uint x, uint y)
             {
-                cell.ToggleFlagged();
+                MinesweeperModel.ToggleFlagged(x, y);
             }
             
             public override void OnStateExit()
