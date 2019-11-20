@@ -15,9 +15,14 @@ namespace PM.Core
 
         [Inject] protected readonly SignalBus SignalBus;
 
+        public StateMachinePresenter()
+        {
+            //Disposables = new CompositeDisposable();
+        }
+        
         public virtual void Initialize()
 		{
-			Disposables = new CompositeDisposable();
+            Disposables = new CompositeDisposable();
         }
 
         public virtual void GoToState(Type stateType)

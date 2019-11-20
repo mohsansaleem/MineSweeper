@@ -6,17 +6,21 @@ namespace PM.Minesweeper
     {
         public class MinesweeperState : StateBehaviour
         {
-            protected readonly MinesweeperPresenter Mediator;
-            protected readonly MinesweeperView View;
+            protected readonly MinesweeperPresenter Presenter;
+            protected readonly IMinesweeperView View;
             protected readonly MinesweeperModel MinesweeperModel;
+            
+            protected readonly MinesweeperSettingsInstaller.Settings Settings;
             
 
             public MinesweeperState(MinesweeperPresenter presenter) : base(presenter) 
             {
-                this.Mediator = presenter;
+                this.Presenter = presenter;
                 this.View = presenter._view;
                 
                 this.MinesweeperModel = presenter._minesweeperModel;
+
+                this.Settings = presenter._settings;
             }
         }
     }
