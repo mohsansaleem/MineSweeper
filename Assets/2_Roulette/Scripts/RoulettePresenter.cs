@@ -9,8 +9,8 @@ namespace PM.Roulette
 {
     public partial class RoulettePresenter : StateMachinePresenter
     {
-        [Inject] private readonly RouletteView _view;
-        [Inject] private readonly RouletteModel _rouletteModel;
+        [Inject] private readonly IRouletteView _view;
+        [Inject] private readonly IRouletteModel _rouletteModel;
         [Inject] private readonly GameplayApi _gameplayApi;
         
         public RoulettePresenter()
@@ -24,34 +24,30 @@ namespace PM.Roulette
 
             _gameplayApi.Initialise();
 
-            StateBehaviours.Add(typeof(RouletteStateLoadStaticData), new RouletteStateLoadStaticData(this));
-            StateBehaviours.Add(typeof(RouletteStateLoadUserData), new RouletteStateLoadUserData(this));
-            StateBehaviours.Add(typeof(RouletteStateCreateUserData), new RouletteStateCreateUserData(this));
-            StateBehaviours.Add(typeof(RouletteStateGamePlay), new RouletteStateGamePlay(this));
+            StateBehaviours.Add(typeof(RouletteStateSetup), new RouletteStateSetup(this));
+            StateBehaviours.Add(typeof(RouletteStateStart), new RouletteStateStart(this));
+            StateBehaviours.Add(typeof(RouletteStateInitialWin), new RouletteStateInitialWin(this));
+            StateBehaviours.Add(typeof(RouletteStateSpinner), new RouletteStateSpinner(this));
 
-            _rouletteModel.LoadingProgress.Subscribe(OnLoadingProgressChanged).AddTo(Disposables);
+            _rouletteModel.SubscribeState(OnLoadingProgressChanged).AddTo(Disposables);
         }
 
-        private void OnLoadingProgressChanged(RouletteModel.ELoadingProgress loadingProgress)
+        private void OnLoadingProgressChanged(ERouletteState rouletteState)
         {
-            _view.ProgressBar.value = (float)loadingProgress / 100;
-            _view.LogoImage.SetActive(loadingProgress != RouletteModel.ELoadingProgress.GamePlay);
-            
-            
             Type targetType = null;
-            switch (loadingProgress)
+            switch (rouletteState)
             {
-                case RouletteModel.ELoadingProgress.Zero:
-                    targetType = typeof(RouletteStateLoadStaticData);
+                case ERouletteState.Setup:
+                    targetType = typeof(RouletteStateSetup);
                     break;
-                case RouletteModel.ELoadingProgress.StaticDataLoaded:
-                    targetType = typeof(RouletteStateLoadUserData);
+                case ERouletteState.Rest:
+                    targetType = typeof(RouletteStateStart);
                     break;
-                case RouletteModel.ELoadingProgress.UserNotFound:
-                    targetType = typeof(RouletteStateCreateUserData);
+                case ERouletteState.NormalReward:
+                    targetType = typeof(RouletteStateInitialWin);
                     break;
-                case RouletteModel.ELoadingProgress.GamePlay:
-                    targetType = typeof(RouletteStateGamePlay);
+                case ERouletteState.Spinner:
+                    targetType = typeof(RouletteStateSpinner);
                     break;
                 default:
                     Debug.LogError("State Missing in Mediator.");

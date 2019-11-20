@@ -7,8 +7,8 @@ namespace PM.Roulette
         public class RouletteState : StateMachinePresenter.StateBehaviour
         {
             protected readonly RoulettePresenter Presenter;
-            protected readonly RouletteModel RouletteModel;
-            protected readonly RouletteView View;
+            protected readonly IRouletteModel RouletteModel;
+            protected readonly IRouletteView View;
             
             public RouletteState(RoulettePresenter presenter) : base(presenter)
             {

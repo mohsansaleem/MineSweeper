@@ -3,7 +3,7 @@ using UnityEngine.UI;
 
 namespace PM.Roulette
 {
-    public class RouletteView : MonoBehaviour
+    public class RouletteView : MonoBehaviour, IRouletteView
     {
         [Header("References")]         
         public GameObject LogoImage;
@@ -23,6 +23,12 @@ namespace PM.Roulette
         {
             gameObject?.SetActive(false);
         }
+    }
+
+    public interface IRouletteView
+    {
+        void Show();
+        void Hide();
     }
 }
 

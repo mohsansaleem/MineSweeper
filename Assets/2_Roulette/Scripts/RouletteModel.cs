@@ -1,24 +1,34 @@
-﻿using UniRx;
+﻿using System;
+using UniRx;
 
 namespace PM.Roulette
 {
-    public class RouletteModel
+    public class RouletteModel: IRouletteModel
     {
-        public enum ELoadingProgress
-        {
-            NotLoaded = -1,
-            Zero = 0,
-            StaticDataLoaded = 30,
-            UserNotFound = 80,
-            GamePlay = 100
-        }
-
-        public ReactiveProperty<ELoadingProgress> LoadingProgress;
+        private ReactiveProperty<ERouletteState> _rouletteState;
 
         public RouletteModel()
         {
-            LoadingProgress = new ReactiveProperty<ELoadingProgress>(ELoadingProgress.Zero);
+            _rouletteState = new ReactiveProperty<ERouletteState>(ERouletteState.Setup);
         }
+
+        public IDisposable SubscribeState(Action<ERouletteState> onChange)
+        {
+            return _rouletteState.Subscribe(onChange);
+        }
+    }
+
+    public interface IRouletteModel
+    {
+        IDisposable SubscribeState(Action<ERouletteState> onChange);
+    }
+    
+    public enum ERouletteState
+    {
+        Setup,
+        Rest,
+        NormalReward,
+        Spinner
     }
 }
 
