@@ -2,9 +2,9 @@
 {
     public partial class RoulettePresenter
     {
-        public class RouletteStateSpinner: RouletteState
+        public class RouletteStateResult: RouletteState
         {
-            public RouletteStateSpinner(RoulettePresenter presenter):base(presenter)
+            public RouletteStateResult(RoulettePresenter presenter):base(presenter)
             {
             }
 

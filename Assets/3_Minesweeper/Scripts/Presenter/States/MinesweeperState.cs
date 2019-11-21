@@ -16,9 +16,9 @@ namespace PM.Minesweeper
             public MinesweeperState(MinesweeperPresenter presenter) : base(presenter) 
             {
                 this.Presenter = presenter;
-                this.View = presenter._view;
+                this.View = presenter._iView;
                 
-                this.MinesweeperModel = presenter._minesweeperModel;
+                this.MinesweeperModel = presenter._iModel;
 
                 this.Settings = presenter._settings;
             }

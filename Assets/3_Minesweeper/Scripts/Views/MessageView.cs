@@ -12,12 +12,12 @@ namespace PM.Minesweeper
         public void Show(string message, Action onClick)
         {
             MessageText.text = message;
-            Button.onClick.AddListener(()=>
+            Button.onClick.AddListener(() =>
             {
                 Hide();
                 onClick?.Invoke();
             });
-            
+
             gameObject.SetActive(true);
         }
 

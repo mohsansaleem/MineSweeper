@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using PM.Core;
 using Server.API;
 using UniRx;
@@ -9,8 +10,8 @@ namespace PM.Roulette
 {
     public partial class RoulettePresenter : StateMachinePresenter
     {
-        [Inject] private readonly IRouletteView _view;
-        [Inject] private readonly IRouletteModel _rouletteModel;
+        [Inject] private readonly IRouletteView _iView;
+        [Inject] private readonly IRouletteModel _iModel;
         [Inject] private readonly GameplayApi _gameplayApi;
         
         public RoulettePresenter()
@@ -23,15 +24,25 @@ namespace PM.Roulette
             base.Initialize();
 
             _gameplayApi.Initialise();
-
+            
+            // Binding View and Model.
+            BindView();
+            
             StateBehaviours.Add(typeof(RouletteStateSetup), new RouletteStateSetup(this));
             StateBehaviours.Add(typeof(RouletteStateStart), new RouletteStateStart(this));
             StateBehaviours.Add(typeof(RouletteStateInitialWin), new RouletteStateInitialWin(this));
             StateBehaviours.Add(typeof(RouletteStateSpinner), new RouletteStateSpinner(this));
+            StateBehaviours.Add(typeof(RouletteStateResult), new RouletteStateResult(this));
 
-            _rouletteModel.SubscribeState(OnLoadingProgressChanged).AddTo(Disposables);
+            _iModel.SubscribeState(OnLoadingProgressChanged).AddTo(Disposables);
         }
 
+        private void BindView()
+        {
+            _iModel.SubscribeBalance(_iView.SetBalance).AddTo(Disposables);
+            _iModel.SubscribeInitialWin(_iView.SetInitialWin).AddTo(Disposables);
+        }
+        
         private void OnLoadingProgressChanged(ERouletteState rouletteState)
         {
             Type targetType = null;
@@ -40,7 +51,7 @@ namespace PM.Roulette
                 case ERouletteState.Setup:
                     targetType = typeof(RouletteStateSetup);
                     break;
-                case ERouletteState.Rest:
+                case ERouletteState.Start:
                     targetType = typeof(RouletteStateStart);
                     break;
                 case ERouletteState.NormalReward:
@@ -48,6 +59,9 @@ namespace PM.Roulette
                     break;
                 case ERouletteState.Spinner:
                     targetType = typeof(RouletteStateSpinner);
+                    break;
+                case ERouletteState.Result:
+                    targetType = typeof(RouletteStateResult);
                     break;
                 default:
                     Debug.LogError("State Missing in Mediator.");
@@ -64,17 +78,12 @@ namespace PM.Roulette
 
         private void OnReload()
         {
-            _view.Show();
+            _iView.Show();
         }
 
         private void OnLoadingStart()
         {
-            _view.Show();
-        }
-
-        public override void Dispose()
-        {
-            base.Dispose();
+            _iView.Show();
         }
     }
 }

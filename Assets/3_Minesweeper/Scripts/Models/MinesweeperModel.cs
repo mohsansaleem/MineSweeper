@@ -24,6 +24,9 @@ namespace PM.Minesweeper
             set => _gameState.Value = value;
         }
         
+
+        #region Grid
+        
         public void CreateGrid(uint sizeX, uint sizeY)
         {
             MineFieldGrid = new MineFieldCell[sizeX, sizeY];
@@ -36,7 +39,7 @@ namespace PM.Minesweeper
                 }
             }
         }
-        
+
         public void PopulateGrid(uint x, uint y, uint settingsMinesCount)
         {
             // Placing Mines
@@ -59,7 +62,7 @@ namespace PM.Minesweeper
                 }
             }
         }
-        
+
         private void UpdateSiblingsCount(uint x, uint y, uint sizeX, uint sizeY)
         {
             for (uint r = x > 0 ? x - 1 : x; r < x + 2 && r < sizeX; r++)
@@ -88,6 +91,11 @@ namespace PM.Minesweeper
             }
         }
         
+        #endregion
+
+
+        #region Cells
+        
         public void ToggleFlagged(uint x, uint y)
         {
             MineFieldGrid[x, y].ToggleFlagged();
@@ -112,7 +120,9 @@ namespace PM.Minesweeper
         {
             MineFieldGrid[x, y].IsOpened.Value = value;
         }
-        
+        #endregion
+
+        #region Subscribers
         // Subscribes.
         public IDisposable SubscribeGameState(Action<EGameState> onStateChanged)
         {
@@ -128,16 +138,11 @@ namespace PM.Minesweeper
         {
             return MineFieldGrid[x, y].IsOpened.Subscribe(action);
         }
-        
+
         public IDisposable SubscribeMineFieldGridCellFlagged(uint x, uint y, Action<bool> action)
         {
             return MineFieldGrid[x, y].IsFlagged.Subscribe(action);
         }
-    }
-
-    public enum EGameState
-    {
-        Setup,
-        Playing
+        #endregion
     }
 }

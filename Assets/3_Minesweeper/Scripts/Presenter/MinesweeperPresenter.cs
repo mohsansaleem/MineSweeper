@@ -8,8 +8,8 @@ namespace PM.Minesweeper
 {
     public partial class MinesweeperPresenter : StateMachinePresenter
     {
-        [Inject] private readonly IMinesweeperView _view;
-        [Inject] private readonly IMinesweeperModel _minesweeperModel;
+        [Inject] private readonly IMinesweeperView _iView;
+        [Inject] private readonly IMinesweeperModel _iModel;
         [Inject] private readonly MinesweeperSettingsInstaller.Settings _settings;
 
         // Actions.
@@ -22,36 +22,35 @@ namespace PM.Minesweeper
 
             // Creating the Grid.
             CreateGrid();
-            
+
             // Keeping a track of States.
             StateBehaviours.Add(typeof(MinesweeperStateSetup), new MinesweeperStateSetup(this));
             StateBehaviours.Add(typeof(MinesweeperStatePlaying), new MinesweeperStatePlaying(this));
 
             // Showing the View.
-            _view.Show();
-            
-            _minesweeperModel.SubscribeGameState(OnLoadingProgressChanged).AddTo(Disposables);
+            _iView.Show();
+
+            _iModel.SubscribeGameState(OnLoadingProgressChanged).AddTo(Disposables);
         }
 
         private void CreateGrid()
         {
-            _minesweeperModel.CreateGrid(_settings.SizeX, _settings.SizeY);
-            _view.CreateGridUI(_settings.SizeX, _settings.SizeY);
-            
+            _iModel.CreateGrid(_settings.SizeX, _settings.SizeY);
+            _iView.CreateGridUI(_settings.SizeX, _settings.SizeY);
+
             for (uint indexX = 0; indexX < _settings.SizeX; indexX++)
             {
                 for (uint indexY = 0; indexY < _settings.SizeY; indexY++)
                 {
                     uint x = indexX;
                     uint y = indexY;
-                    
+
                     // Binding Models and Views.
                     BindCell(indexX, indexY);
-                    
-                    // Binding Input.
-                    _view.SubcribleOnCellClick(indexX, indexY, ()=> OnCellClicked?.Invoke(x, y));
-                    _view.SubcribleOnCellRightClick(indexX, indexY, () => OnCellRightClicked?.Invoke(x, y));
 
+                    // Binding Input.
+                    _iView.SubcribleOnCellClick(indexX, indexY, () => OnCellClicked?.Invoke(x, y));
+                    _iView.SubcribleOnCellRightClick(indexX, indexY, () => OnCellRightClicked?.Invoke(x, y));
                 }
             }
         }
@@ -59,32 +58,26 @@ namespace PM.Minesweeper
         private void BindCell(uint indexX, uint indexY)
         {
             //var cell = _minesweeperModel.MineFieldGrid[indexX, indexY];
-            _minesweeperModel.SubscribeMineFieldGridCellData(indexX, indexY, (eMineFieldCellData) =>
-            {
-                _view.SetCellData(indexX, indexY, eMineFieldCellData);
-                
-            }).AddTo(Disposables);
-            
-            
-            _minesweeperModel.SubscribeMineFieldGridCellFlagged(indexX,
-                                                                indexY,
-                                                                isFlagged =>
-                                                                {
-                                                                    _view.SetCellFlagged(indexX, indexY, isFlagged);
-                                                                })
+            _iModel.SubscribeMineFieldGridCellData(indexX, indexY,
+                (eMineFieldCellData) => { _iView.SetCellData(indexX, indexY, eMineFieldCellData); }).AddTo(Disposables);
+
+
+            _iModel.SubscribeMineFieldGridCellFlagged(indexX,
+                    indexY,
+                    isFlagged => { _iView.SetCellFlagged(indexX, indexY, isFlagged); })
                 .AddTo(Disposables);
-            
-            _minesweeperModel.SubscribeMineFieldGridCellOpened(indexX,
-                                                               indexY,
-                                                               isOpened =>
-                                                               {
-                                                                   _view.SetCellContentVisible(indexX, 
-                                                                                               indexY,
-                                                                                               isOpened);
-                                                               })
+
+            _iModel.SubscribeMineFieldGridCellOpened(indexX,
+                    indexY,
+                    isOpened =>
+                    {
+                        _iView.SetCellContentVisible(indexX,
+                            indexY,
+                            isOpened);
+                    })
                 .AddTo(Disposables);
         }
-        
+
         private void OnLoadingProgressChanged(EGameState loadingProgress)
         {
             Type targetType = null;
@@ -111,12 +104,12 @@ namespace PM.Minesweeper
 
         private void OnReload()
         {
-            _view.Show();
+            _iView.Show();
         }
 
         private void OnLoadingStart()
         {
-            _view.Show();
+            _iView.Show();
         }
     }
 }

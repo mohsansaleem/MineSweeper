@@ -1,4 +1,5 @@
 ﻿using PM.Core;
+using Server.API;
 
 namespace PM.Roulette
 {
@@ -10,11 +11,15 @@ namespace PM.Roulette
             protected readonly IRouletteModel RouletteModel;
             protected readonly IRouletteView View;
             
+            protected readonly GameplayApi GameplayApi;
+            
             public RouletteState(RoulettePresenter presenter) : base(presenter)
             {
                 this.Presenter = presenter;
-                this.RouletteModel = presenter._rouletteModel;
-                this.View = presenter._view;
+                this.RouletteModel = presenter._iModel;
+                this.View = presenter._iView;
+
+                GameplayApi = presenter._gameplayApi;
             }
         }
     }

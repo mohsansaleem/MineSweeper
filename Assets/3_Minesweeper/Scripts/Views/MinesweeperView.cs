@@ -7,14 +7,13 @@ namespace PM.Minesweeper
 {
     public class MinesweeperView : MonoBehaviour, IMinesweeperView
     {
-        [Header("View")]
-        public GridLayoutGroup GridView;
+        [Header("View")] public GridLayoutGroup GridView;
         public RectTransform GridRectTransform;
         public MessageView MessageView;
-        
+
         // Prefabs
         public MineSweeperCellView CellViewPrefab;
-        
+
         // Locals
         public MineSweeperCellView[,] CellViews;
 
@@ -23,21 +22,22 @@ namespace PM.Minesweeper
             CellViews = new MineSweeperCellView[sizeX, sizeY];
 
             GridView.cellSize = new Vector2(GridRectTransform.sizeDelta.x / sizeY,
-                                            GridRectTransform.sizeDelta.y / sizeX);
+                GridRectTransform.sizeDelta.y / sizeX);
 
-            GridView.constraintCount = (int)sizeY;
-            
+            GridView.constraintCount = (int) sizeY;
+
             for (int indexX = 0; indexX < sizeX; indexX++)
             {
                 for (int indexY = 0; indexY < sizeY; indexY++)
                 {
                     // No need for using a pool for Cells as they will be reused on replay.
-                     CellViews[indexX, indexY] = (MineSweeperCellView)PrefabUtility.InstantiatePrefab(CellViewPrefab, GridRectTransform);
-                     CellViews[indexX, indexY].name = $"Cell[{indexX}x{indexY}]";
+                    CellViews[indexX, indexY] =
+                        (MineSweeperCellView) PrefabUtility.InstantiatePrefab(CellViewPrefab, GridRectTransform);
+                    CellViews[indexX, indexY].name = $"Cell[{indexX}x{indexY}]";
                 }
             }
         }
-        
+
         public void Show()
         {
             gameObject.SetActive(true);
@@ -47,7 +47,7 @@ namespace PM.Minesweeper
         {
             gameObject.SetActive(false);
         }
-        
+
         public void ShowMessage(string message, Action action)
         {
             MessageView.Show(message, action);
@@ -63,13 +63,13 @@ namespace PM.Minesweeper
         public void SetCellData(uint cellX, uint cellY, EMineFieldCellData eMineFieldCellData)
         {
             MineSweeperCellView cellView = CellViews[cellX, cellY];
-            
+
             cellView.IsMine = (eMineFieldCellData == EMineFieldCellData.MINE);
-                
-            if(eMineFieldCellData != EMineFieldCellData.M0 && 
-               eMineFieldCellData != EMineFieldCellData.MINE)
+
+            if (eMineFieldCellData != EMineFieldCellData.M0 &&
+                eMineFieldCellData != EMineFieldCellData.MINE)
             {
-                cellView.CellValue.text = ((int)eMineFieldCellData).ToString();   
+                cellView.CellValue.text = ((int) eMineFieldCellData).ToString();
             }
             else
             {
@@ -86,21 +86,22 @@ namespace PM.Minesweeper
         {
             CellViews[cellX, cellY].IsContentVisible = isOpened;
         }
-        
+
         #endregion
 
 
         #region Subscription
+
         public void SubcribleOnCellClick(uint indexX, uint indexY, Action action)
         {
-            CellViews[indexX, indexY].CellButton.onClick.AddListener(()=> action?.Invoke());
+            CellViews[indexX, indexY].CellButton.onClick.AddListener(() => action?.Invoke());
         }
 
         public void SubcribleOnCellRightClick(uint indexX, uint indexY, Action action)
         {
             CellViews[indexX, indexY].OnRightClicked = action;
         }
+
         #endregion
     }
 }
-

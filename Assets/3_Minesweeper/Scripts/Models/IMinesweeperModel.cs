@@ -23,4 +23,10 @@ namespace PM.Minesweeper
         IDisposable SubscribeMineFieldGridCellOpened(uint x, uint y, Action<bool> action);
         IDisposable SubscribeMineFieldGridCellFlagged(uint x, uint y, Action<bool> action);
     }
+    
+    public enum EGameState
+    {
+        Setup,
+        Playing
+    }
 }
