@@ -14,18 +14,19 @@ namespace PM.Roulette
             {
                 base.OnStateEnter();
 
-                // TODO: Command.
-                GameplayApi.GetPlayerBalance()
-                    .Done(balance =>
+                Presenter.ResetValues();
+                
+                GetPlayerBalanceSignal.Fire(SignalBus).Done(() =>
                         {
-                            RouletteModel.SetBalance(balance);
-                            RouletteModel.SetRouletteState(ERouletteState.Start);
+                            RouletteModel.RouletteState = ERouletteState.Start;
                         },
                         exception =>
                         {
                             // TODO: Do something...
                             Debug.LogError($"Error: Something went wrong. {exception}");
                         });
+                
+                
                 //(View as RouletteView).WheelTransform.Rotate(new Vector3(0,0,1), 45);
             }
         }

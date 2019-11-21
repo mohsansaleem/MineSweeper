@@ -10,12 +10,15 @@ namespace PM.Roulette
 
         private ReactiveProperty<int> _initialWin;
         private ReactiveProperty<int> _multiplier;
+        private ReactiveProperty<long> _resultantBalance;
 
         public RouletteModel()
         {
             _rouletteState = new ReactiveProperty<ERouletteState>(ERouletteState.Setup);
             _playerBalance = new ReactiveProperty<long>(0);
             _initialWin = new ReactiveProperty<int>(0);
+            _multiplier = new ReactiveProperty<int>(0);
+            _resultantBalance = new ReactiveProperty<long>(0);
         }
 
         public IDisposable SubscribeState(Action<ERouletteState> onChange)
@@ -23,24 +26,34 @@ namespace PM.Roulette
             return _rouletteState.Subscribe(onChange);
         }
 
-        public void SetBalance(long balance)
+        public long Balance
         {
-            _playerBalance.Value = balance;
+            get => _playerBalance.Value;
+            set => _playerBalance.Value = value;
         }
         
-        public void SetInitialWin(int win)
+        public int InitialWin
         {
-            _initialWin.Value = win;
+            get => _initialWin.Value;
+            set => _initialWin.Value = value;
         }
 
-        public void SetMultiplier(int multiplier)
+        public int Multiplier
         {
-            _multiplier.Value = multiplier;
+            get => _multiplier.Value;
+            set => _multiplier.Value = value;
         }
 
-        public void SetRouletteState(ERouletteState start)
+        public long Result
         {
-            _rouletteState.Value = start;
+            get => _resultantBalance.Value;
+            private set => _resultantBalance.Value = value;
+        } 
+
+        public ERouletteState RouletteState
+        {
+            get => _rouletteState.Value;
+            set => _rouletteState.Value = value;
         }
 
         public IDisposable SubscribeBalance(Action<long> action)
@@ -58,25 +71,45 @@ namespace PM.Roulette
             return _multiplier.Subscribe(setMultiplier);
         }
 
+        public IDisposable SubscribeResult(Action<long> setResult)
+        {
+            return _resultantBalance.Subscribe(setResult);
+        }
+
         public void ResetValues()
         {
-            SetBalance(0);
-            SetMultiplier(0);
-            SetInitialWin(0);
+            Balance = 0;
+            Multiplier = 0;
+            InitialWin = 0;
+            Multiplier = 0;
+            Result = 0;
+        }
+
+        public bool UpdateBalanceWithMultiplier()
+        {
+            Result = InitialWin * Multiplier;
+            Balance += Result;
+
+            return true;
         }
     }
 
     public interface IRouletteModel
     {
-        IDisposable SubscribeState(Action<ERouletteState> onChange);
-        void SetBalance(long balance);
-        void SetMultiplier(int multiplier);
-        void SetRouletteState(ERouletteState start);
+        long Balance { get; set; }
+        int InitialWin{ get; set; }
+        int Multiplier{ get; set; }
+        long Result{ get; }
+        
+        void ResetValues();
+        bool UpdateBalanceWithMultiplier();
+        
+        ERouletteState RouletteState { get; set; }
         IDisposable SubscribeBalance(Action<long> action);
-        void SetInitialWin(int win);
         IDisposable SubscribeInitialWin(Action<int> setInitialWin);
         IDisposable SubscribeMultiplier(Action<int> setMultiplier);
-        void ResetValues();
+        IDisposable SubscribeResult(Action<long> setResult);
+        IDisposable SubscribeState(Action<ERouletteState> onChange);
     }
     
     public enum ERouletteState

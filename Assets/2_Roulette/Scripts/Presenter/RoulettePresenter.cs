@@ -30,7 +30,6 @@ namespace PM.Roulette
             
             StateBehaviours.Add(typeof(RouletteStateSetup), new RouletteStateSetup(this));
             StateBehaviours.Add(typeof(RouletteStateStart), new RouletteStateStart(this));
-            StateBehaviours.Add(typeof(RouletteStateInitialWin), new RouletteStateInitialWin(this));
             StateBehaviours.Add(typeof(RouletteStateSpinner), new RouletteStateSpinner(this));
             StateBehaviours.Add(typeof(RouletteStateResult), new RouletteStateResult(this));
 
@@ -41,6 +40,15 @@ namespace PM.Roulette
         {
             _iModel.SubscribeBalance(_iView.SetBalance).AddTo(Disposables);
             _iModel.SubscribeInitialWin(_iView.SetInitialWin).AddTo(Disposables);
+            //_iModel.SubscribeMultiplier(_iView.SetMultiplier).AddTo(Disposables);
+            _iModel.SubscribeResult(result => _iView.ShowResult(_iModel.Multiplier, result)).AddTo(Disposables);
+
+        }
+
+        private void ResetValues()
+        {
+            _iModel.ResetValues();
+            _iView.Reset();
         }
         
         private void OnLoadingProgressChanged(ERouletteState rouletteState)
@@ -53,9 +61,6 @@ namespace PM.Roulette
                     break;
                 case ERouletteState.Start:
                     targetType = typeof(RouletteStateStart);
-                    break;
-                case ERouletteState.NormalReward:
-                    targetType = typeof(RouletteStateInitialWin);
                     break;
                 case ERouletteState.Spinner:
                     targetType = typeof(RouletteStateSpinner);
@@ -74,16 +79,6 @@ namespace PM.Roulette
             {
                 GoToState(targetType);
             }
-        }
-
-        private void OnReload()
-        {
-            _iView.Show();
-        }
-
-        private void OnLoadingStart()
-        {
-            _iView.Show();
         }
     }
 }

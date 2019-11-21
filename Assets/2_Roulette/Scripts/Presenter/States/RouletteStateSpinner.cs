@@ -16,11 +16,10 @@ namespace PM.Roulette
             {
                 base.OnStateEnter();
                 
-                // TODO: Command.
-                GameplayApi.GetMultiplier()
-                    .Done(multiplier =>
+                GetMultiplierSignal.Fire(SignalBus)
+                    .Done(() =>
                         {
-                            RouletteModel.SetMultiplier(multiplier);
+                            // TODO: Start Spinning.
                         },
                         exception =>
                         {
@@ -29,15 +28,24 @@ namespace PM.Roulette
                         });
 
                 // TODO: Constant from Settings.
-                Observable.Timer(TimeSpan.FromSeconds(10))
+                Observable.Timer(TimeSpan.FromSeconds(4))
                     .Subscribe(l =>
                     {
                         // TODO: Trigger the stop.
                         
                         // TODO: Set following on Stop.
-                        RouletteModel.SetRouletteState(ERouletteState.Result);
+                        RouletteModel.RouletteState = ERouletteState.Result;
                     })
                     .AddTo(Disposables);
+            }
+
+            private float speed = 100;
+            
+            public override void Tick()
+            {
+                base.Tick();
+                
+                (View as RouletteView).WheelTransform.Rotate(new Vector3(0,0,1), speed * Time.deltaTime);
             }
         }
     }

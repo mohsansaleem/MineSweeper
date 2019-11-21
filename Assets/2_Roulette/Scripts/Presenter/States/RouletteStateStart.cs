@@ -14,14 +14,11 @@ namespace PM.Roulette
             public override void OnStateEnter()
             {
                 base.OnStateEnter();
-
-                RouletteModel.ResetValues();
                 
-                // TODO: Command.
-                GameplayApi.GetInitialWin()
-                    .Done(win =>
+                GetInitialWinSignal.Fire(SignalBus)
+                    .Done(() =>
                         {
-                            RouletteModel.SetInitialWin(win);
+                            View.CanSpin = true;
                         },
                         exception =>
                         {
@@ -34,7 +31,8 @@ namespace PM.Roulette
             
             private void OnSpinTriggered()
             {
-                RouletteModel.SetRouletteState(ERouletteState.Spinner);
+                View.CanSpin = false;
+                RouletteModel.RouletteState = ERouletteState.Spinner;
             }
 
             public override void OnStateExit()
