@@ -17,14 +17,9 @@ namespace DefaultNamespace
                     {
                         _rouletteModel.Balance = balance;
                         
-                        signal.OnResult.Resolve();
+                        signal.Resolve();
                     },
-                    exception =>
-                    {
-                        signal.OnResult.Reject(exception);
-                        // TODO: Do something...
-                        Debug.LogError($"Error: Something went wrong. {exception}");
-                    });
+                    signal.Reject);
         }
     }
 }

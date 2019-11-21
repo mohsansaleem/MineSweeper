@@ -16,22 +16,27 @@ namespace PM.Roulette
             {
                 base.OnStateEnter();
 
-                RouletteModel.UpdateBalanceWithMultiplier();
-                
-                GameplayApi.SetPlayerBalance(RouletteModel.Balance)
-                    .Done(() =>
-                        {
-                            // TODO: Decide what to Do. For Now just getting on the start again.
-                            // TODO: Use Constants from Settings.
-                            Observable.Timer(TimeSpan.FromSeconds(3))
-                                .Subscribe((l => RouletteModel.RouletteState = ERouletteState.Setup));
-                        },
-                        exception =>
-                        {
-                            // TODO: Do something...
-                            Debug.LogError($"Error: Something went wrong. {exception}");
-                        });
-                
+                UpdateBalanceSignal.Fire(SignalBus).Done(() =>
+                    {
+                        SetBalanceSignal.Fire(SignalBus)
+                            .Done(() =>
+                                {
+                                    // TODO: Decide what to Do. For Now just getting on the start again.
+                                    
+                                    Observable.Timer(TimeSpan.FromSeconds(Settings.ResultVisibilityTime))
+                                        .Subscribe(l => RouletteModel.RouletteState = ERouletteState.Setup);
+                                },
+                                exception =>
+                                {
+                                    // TODO: Do something...
+                                    Debug.LogError($"Error: Something went wrong. {exception}");
+                                });
+                    },
+                    exception =>
+                    {
+                        Debug.LogError($"Error: Something went wrong. {exception}");
+                    });
+
             }
         }
     }

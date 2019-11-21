@@ -17,9 +17,9 @@ namespace DefaultNamespace
                     {
                         _rouletteModel.InitialWin = win;
 
-                        signal.OnResult.Resolve();
+                        signal.Resolve();
                     },
-                    signal.OnResult.Reject);
+                    signal.Reject);
         }
     }
 }

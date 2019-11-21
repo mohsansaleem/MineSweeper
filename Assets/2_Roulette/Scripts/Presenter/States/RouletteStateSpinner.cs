@@ -19,33 +19,26 @@ namespace PM.Roulette
                 GetMultiplierSignal.Fire(SignalBus)
                     .Done(() =>
                         {
-                            // TODO: Start Spinning.
+                            Debug.LogError("Requesting.");
+                            View.StartSpinning(RouletteModel.Multiplier);
+
+                            Observable.Timer(TimeSpan.FromSeconds(Settings.SpinTime))
+                                .Subscribe(l =>
+                                {
+                                    // TODO: Trigger the stop.
+                                    View.StopSpinning(() =>
+                                    {
+                                        // TODO: Set following on Stop.
+                                        RouletteModel.RouletteState = ERouletteState.Result;
+                                    });
+                                })
+                                .AddTo(Disposables);
                         },
                         exception =>
                         {
                             // TODO: Do something...
                             Debug.LogError($"Error: Something went wrong. {exception}");
                         });
-
-                // TODO: Constant from Settings.
-                Observable.Timer(TimeSpan.FromSeconds(4))
-                    .Subscribe(l =>
-                    {
-                        // TODO: Trigger the stop.
-                        
-                        // TODO: Set following on Stop.
-                        RouletteModel.RouletteState = ERouletteState.Result;
-                    })
-                    .AddTo(Disposables);
-            }
-
-            private float speed = 100;
-            
-            public override void Tick()
-            {
-                base.Tick();
-                
-                (View as RouletteView).WheelTransform.Rotate(new Vector3(0,0,1), speed * Time.deltaTime);
             }
         }
     }

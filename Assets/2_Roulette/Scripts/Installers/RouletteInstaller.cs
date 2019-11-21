@@ -31,6 +31,16 @@ namespace PM.Roulette
                 .ToMethod<GetInitialWinCommand>((cmd, signal) => { cmd.Execute(signal); })
                 .FromNew();
 
+            Container.DeclareSignal<UpdateBalanceSignal>().RunAsync();
+            Container.BindSignal<UpdateBalanceSignal>()
+                .ToMethod<UpdateBalanceCommand>((cmd, signal) => { cmd.Execute(signal); })
+                .FromNew();
+
+            Container.DeclareSignal<SetBalanceSignal>().RunAsync();
+            Container.BindSignal<SetBalanceSignal>()
+                .ToMethod<SetBalanceCommand>((cmd, signal) => { cmd.Execute(signal); })
+                .FromNew();
+            
             
             Container.BindInterfacesTo<RoulettePresenter>().AsSingle();
         }

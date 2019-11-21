@@ -1,4 +1,5 @@
-﻿using RSG;
+﻿using System;
+using RSG;
 using Zenject;
 
 namespace PM.Roulette
@@ -33,9 +34,29 @@ namespace PM.Roulette
         }
     }
     
+    public class UpdateBalanceSignal : ASignal
+    {
+        public static IPromise Fire(SignalBus signalBus)
+        {
+            UpdateBalanceSignal signal = new UpdateBalanceSignal();
+            
+            return signal.FireInternal(signalBus);
+        }
+    }
+    
+    public class SetBalanceSignal : ASignal
+    {
+        public static IPromise Fire(SignalBus signalBus)
+        {
+            SetBalanceSignal signal = new SetBalanceSignal();
+            
+            return signal.FireInternal(signalBus);
+        }
+    }
+    
     public abstract class ASignal
     {
-        public RSG.Promise OnResult;
+        protected RSG.Promise OnResult;
 
         protected ASignal()
         {
@@ -47,6 +68,16 @@ namespace PM.Roulette
             signalBus.TryFire(this);
 
             return OnResult;
+        }
+
+        public void Resolve()
+        {
+            OnResult.Resolve();
+        }
+
+        public void Reject(Exception ex)
+        {
+            OnResult.Reject(ex);
         }
     }
 }

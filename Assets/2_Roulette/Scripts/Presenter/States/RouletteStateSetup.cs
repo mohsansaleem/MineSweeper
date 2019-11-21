@@ -25,9 +25,6 @@ namespace PM.Roulette
                             // TODO: Do something...
                             Debug.LogError($"Error: Something went wrong. {exception}");
                         });
-                
-                
-                //(View as RouletteView).WheelTransform.Rotate(new Vector3(0,0,1), 45);
             }
         }
     }

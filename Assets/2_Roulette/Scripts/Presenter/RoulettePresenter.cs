@@ -13,6 +13,8 @@ namespace PM.Roulette
         [Inject] private readonly IRouletteView _iView;
         [Inject] private readonly IRouletteModel _iModel;
         [Inject] private readonly GameplayApi _gameplayApi;
+
+        [Inject] private readonly RouletteSettingsInstaller.Settings _settings;
         
         public RoulettePresenter()
         {
