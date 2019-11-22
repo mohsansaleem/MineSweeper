@@ -21,11 +21,11 @@ namespace PM.EditorTool.Editor
         private Action _executeCommandsAction;
         private Action _applyAction;
         private Action _revertAction;
-        private Action _disposeCommandAction;
+        private Action _disposeAction;
 
 
         private string _folderPath = "";
-        private List<PrefabChangeCommand> _commands = new List<PrefabChangeCommand>();
+        private List<PrefabItem> _prefabItems = new List<PrefabItem>();
         
         public string myString = "Hello World";
 
@@ -66,14 +66,14 @@ namespace PM.EditorTool.Editor
 
         private void ResetCommands()
         {
-            if (_commands.Count > 0)
+            if (_prefabItems.Count > 0)
             {
-                foreach (PrefabChangeCommand command in _commands)
+                foreach (PrefabItem command in _prefabItems)
                 {
-                    command.Dispose();
+                    command.DisposePrefabInstance();
                 }
                 
-                _commands.Clear();
+                _prefabItems.Clear();
             }
         }
 
@@ -111,7 +111,7 @@ namespace PM.EditorTool.Editor
         myFloat = EditorGUILayout.Slider("Slider", myFloat, -3, 3);
         EditorGUILayout.EndToggleGroup();*/
 
-            GenerationPanel();
+            SearchPanel();
 
             //CopyFirstLevel();
             //SetTutorialData();
@@ -167,27 +167,27 @@ namespace PM.EditorTool.Editor
         }
         */
         
-        private void GenerationPanel()
+        private void SearchPanel()
         {
-            
-
-            //NumOfLevels = EditorGUILayout.IntField("Level: ", NumOfLevels);
-            GUILayout.BeginVertical();
-            
-            EditorGUILayout.LabelField("Prefabs Folder", EditorStyles.boldLabel);
-            
             GUILayout.BeginHorizontal();
 
-            if (GUILayout.Button("Select folder"))
+            GUILayout.BeginVertical(EditorStyles.helpBox);
+            GUILayout.Label("Detail View Area", EditorStyles.boldLabel, GUILayout.Width(400));
+
+            GUILayout.Space(25);
+            
+            if (GUILayout.Button("Select folder", GUILayout.Width(50)))
             {
                 _folderPath = EditorUtility.OpenFolderPanel("Select folder to Search for Prefabs",  "~/Assets/", "");
                 
                 _folderPath=  "Assets" + _folderPath.Substring(Application.dataPath.Length);
             }
 
-            EditorGUILayout.TextArea(_folderPath, EditorStyles.largeLabel);
+            //EditorGUILayout.TextArea(_folderPath, EditorStyles.largeLabel);
 
-            GUILayout.EndHorizontal();
+            GUI.enabled = false;
+            EditorGUILayout.TextField("Folder Path ", _folderPath);
+            GUI.enabled = true;
 
             if (!string.IsNullOrEmpty(_folderPath))
             {
@@ -257,13 +257,13 @@ namespace PM.EditorTool.Editor
                                 // apply those with commands.
                                 
                                 // New way.
-                                var cmd = new AddComponentCommand(gameObject.Key, typeof(Image));
-                                _commands.Add(cmd);
+                                var cmd = new PrefabItem(gameObject.Key);
+                                _prefabItems.Add(cmd);
 
                                 _executeCommandsAction += cmd.Execute;
-                                _applyAction += cmd.Apply;
-                                _revertAction += cmd.Revert;
-                                _disposeCommandAction += cmd.Dispose;
+                                _applyAction += cmd.ApplySettings;
+                                _revertAction += cmd.RevertSettings;
+                                _disposeAction += cmd.DisposePrefabInstance;
                                 //cmd.Execute();
                                 //cmd.Apply();
                                     
@@ -287,101 +287,85 @@ namespace PM.EditorTool.Editor
             GUILayout.EndVertical();
         }
         
-        /*
-
-        Vector2 scrollPos;
-
-        void ShowLevels()
+        private void DisplaySettingsCheckListView()
         {
-            GUILayout.Space(10);
-            EditorGUILayout.LabelField("Levels Meta", EditorStyles.boldLabel);
-
-            scrollPos = GUILayout.BeginScrollView(scrollPos);
-
-            GUILayout.BeginVertical();
-
-            for (int i = 0; i < _levelsMeta.LevelMetaList.Count; i++)
-            {
-                var levelMeta = _levelsMeta.LevelMetaList[i];
-
-                GUILayout.BeginVertical();
-
-
-                EditorGUILayout.LabelField(i + ":", EditorStyles.boldLabel);
-
-                var str = JsonConvert.SerializeObject(levelMeta);
-                EditorGUILayout.TextField(str, EditorStyles.miniLabel);
-
-                GUILayout.EndVertical();
-
-                GUILayout.Space(5);
-            }
-
-            GUILayout.EndVertical();
-
-            GUILayout.EndScrollView();
-        }*/
+            // applyText toggle
+            // applyColor toggle
+            // applySprite toggle
+            /*
+            EditorGUILayout.BeginHorizontal();
+            _applyText = EditorGUILayout.Toggle("Apply Text ", _applyText);
+            _applyColor = EditorGUILayout.Toggle("Apply Color ", _applyColor);
+            _applySprite = EditorGUILayout.Toggle("Apply Sprite ", _applySprite);
+            EditorGUILayout.EndHorizontal();
+            */
+        }
     }
 
-    public abstract class PrefabChangeCommand
+    public class PrefabItem
     {
         private readonly string _path;
-        //private readonly GameObject _asset;
-        protected readonly GameObject TmpGameObject;
+        private readonly GameObject _prefabInstance;
         
-
-        protected PrefabChangeCommand(string path)//, GameObject asset)
+        // Local
+        private Text _textComponent;
+        private Image _imageComponent;
+        
+        public PrefabItem(string path)
         {
             _path = path;
-            //_asset = asset;
-            TmpGameObject = PrefabUtility.LoadPrefabContents(_path);
+            _prefabInstance = PrefabUtility.LoadPrefabContents(_path);
+        }
+
+        private void AddImageComponent()
+        {
+            if (_imageComponent != null)
+            {
+                _imageComponent = _prefabInstance.AddComponent<Image>();
+                
+                // If Root has a Text Component we won't be able to Add Image.
+                // So adding Image to a Child.
+                if (_imageComponent)
+                {
+                    AddImageChild();
+                }
+            }
+            else
+            {
+                Debug.LogError("Image Component already Exists.");
+            }
         }
         
-        public abstract void Execute();
+        private void AddImageChild()
+        {
+            GameObject addedGameObject = new GameObject("Image", typeof(Image));
+            addedGameObject.transform.SetParent(_prefabInstance.transform);
+
+            _imageComponent = addedGameObject.GetComponent<Image>();
+        }
         
-        public virtual void Apply()
+        public void Execute()
+        {
+            
+        }
+        
+        
+        public void ApplySettings()
         {
             Debug.LogError("Apply");
-            //PrefabUtility.ApplyPrefabInstance(_tmpGameObject, InteractionMode.AutomatedAction);
-            
-            // New way.
-            PrefabUtility.SaveAsPrefabAsset(TmpGameObject, _path);
+            PrefabUtility.SaveAsPrefabAsset(_prefabInstance, _path);
         }
-
-        public virtual void Revert()
+        
+        public void RevertSettings()
         {
             Debug.LogError("Revert");
-            //PrefabUtility.RevertPrefabInstance();
-            
-            // New way
-            PrefabUtility.RevertPrefabInstance(TmpGameObject, InteractionMode.AutomatedAction);
+            PrefabUtility.RevertPrefabInstance(_prefabInstance, InteractionMode.AutomatedAction);
         }
 
-        public virtual void Dispose()
+        public void DisposePrefabInstance()
         {
             Debug.LogError("Dispose");
-            //GameObject.DestroyImmediate(_tmpGameObject);
-            
-            // New way
-            PrefabUtility.UnloadPrefabContents(TmpGameObject);
-        }
-    }
-
-    public class AddComponentCommand : PrefabChangeCommand
-    {
-        private Type _type;
-        private GameObject _addedGameObject;
-
-        //public AddComponentCommand(string path, GameObject asset, Type type) : base(path, asset)
-        public AddComponentCommand(string path, Type type) : base(path)
-        {
-            _type = type;
-        }
-
-        public override void Execute()
-        {
-            _addedGameObject = new GameObject("Image", _type);
-            _addedGameObject.transform.SetParent(TmpGameObject.transform);   
+            PrefabUtility.UnloadPrefabContents(_prefabInstance);
         }
     }
 }
