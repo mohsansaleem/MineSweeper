@@ -74,15 +74,14 @@ namespace PM.Roulette
         {
             while (true)
             {
-                WheelTransform.localEulerAngles =
-                    new Vector3(0, 0, WheelTransform.localEulerAngles.z + _speed * Time.deltaTime);
+                WheelTransform.Rotate(0,0,_speed * Time.deltaTime);
 
                 if (_speed > _settings.MinSpeed)
                 {
                     if (_slowingDown)
                         _speed -= _settings.Resistence;
                 }
-                else if (Mathf.Abs(WheelTransform.localEulerAngles.z - _targetAngle) < 5)
+                else if (Mathf.Abs(WheelTransform.localEulerAngles.z - _targetAngle) < 1)
                 {
                     // TODO: Make it more smoother.
                     onSpinningStopped?.Invoke();
