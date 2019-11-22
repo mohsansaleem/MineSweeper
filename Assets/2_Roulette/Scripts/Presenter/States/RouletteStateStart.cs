@@ -22,7 +22,6 @@ namespace PM.Roulette
                         },
                         exception =>
                         {
-                            // TODO: Do something...
                             Debug.LogError($"Error: Something went wrong. {exception}");
                         });
 
