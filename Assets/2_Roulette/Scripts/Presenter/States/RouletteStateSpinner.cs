@@ -19,17 +19,14 @@ namespace PM.Roulette
                 GetMultiplierSignal.Fire(SignalBus)
                     .Done(() =>
                         {
-                            Debug.LogError("Requesting.");
-                            View.StartSpinning(RouletteModel.Multiplier);
+                            View.StartSpinning(Model.Multiplier);
 
                             Observable.Timer(TimeSpan.FromSeconds(Settings.SpinTime))
                                 .Subscribe(l =>
                                 {
-                                    // TODO: Trigger the stop.
                                     View.StopSpinning(() =>
                                     {
-                                        // TODO: Set following on Stop.
-                                        RouletteModel.RouletteState = ERouletteState.Result;
+                                        Model.RouletteState = ERouletteState.Result;
                                     });
                                 })
                                 .AddTo(Disposables);

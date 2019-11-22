@@ -32,7 +32,7 @@ namespace PM.Roulette
             private void OnSpinTriggered()
             {
                 View.CanSpin = false;
-                RouletteModel.RouletteState = ERouletteState.Spinner;
+                Model.RouletteState = ERouletteState.Spinner;
             }
 
             public override void OnStateExit()

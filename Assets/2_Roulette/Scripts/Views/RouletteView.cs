@@ -27,6 +27,8 @@ namespace PM.Roulette
         private bool _slowingDown;
         private float _targetAngle;
 
+        private float _tmpAngle;
+
         private void Start()
         {
             SpinButton.onClick.AddListener(() => onSpinButtonClicked?.Invoke());
@@ -47,6 +49,56 @@ namespace PM.Roulette
             gameObject?.SetActive(false);
         }
 
+        public void Reset()
+        {
+            CanSpin = false;
+        }
+
+        public void StartSpinning(int multiplier)
+        {
+            _slowingDown = false;
+            _speed = _settings.RouletteSpeed;
+
+            _targetAngle = _settings.Multipliers.IndexOf(multiplier) * 20f;
+
+            StartCoroutine(nameof(Rotate));
+        }
+
+        public void StopSpinning(Action onSpinningStop)
+        {
+            onSpinningStopped = onSpinningStop;
+            _slowingDown = true;
+        }
+
+        IEnumerator Rotate()
+        {
+            while (true)
+            {
+                WheelTransform.localEulerAngles =
+                    new Vector3(0, 0, WheelTransform.localEulerAngles.z + _speed * Time.deltaTime);
+
+                if (_speed > _settings.MinSpeed)
+                {
+                    if (_slowingDown)
+                        _speed -= _settings.Resistence;
+                }
+                else if (Mathf.Abs(WheelTransform.localEulerAngles.z - _targetAngle) < 5)
+                {
+                    // TODO: Make it more smoother.
+                    onSpinningStopped?.Invoke();
+                    break;
+                }
+
+                yield return new WaitForEndOfFrame();
+            }
+        }
+        
+        public void ShowResult(int multiplier, long result)
+        {
+            SetMultiplier(multiplier);
+            SetResult(result);
+        }
+        
         public void SetBalance(long balance)
         {
             BalanceText.text = balance.ToString();
@@ -67,12 +119,6 @@ namespace PM.Roulette
             FinalRewardText.text = result == 0 ? "----" : result.ToString();
         }
 
-        public void ShowResult(int multiplier, long result)
-        {
-            SetMultiplier(multiplier);
-            SetResult(result);
-        }
-
         public bool CanSpin
         {
             set => SpinButton.interactable = value;
@@ -87,66 +133,5 @@ namespace PM.Roulette
         {
             onSpinButtonClicked -= onSpinTriggered;
         }
-
-        public void Reset()
-        {
-            CanSpin = false;
-        }
-
-        public void StartSpinning(int multiplier)
-        {
-                _slowingDown = false;
-                _speed = _settings.RouletteSpeed;
-                Debug.LogError($"{multiplier}: {_settings.Multipliers.IndexOf(multiplier)}");
-                _targetAngle =
-                    _settings.Multipliers.IndexOf(multiplier) * 20f;
-
-                StartCoroutine(nameof(Rotate));
-        }
-
-        public void StopSpinning(Action onSpinningStop)
-        {
-            onSpinningStopped = onSpinningStop;
-            _slowingDown = true;
-        }
-
-        IEnumerator Rotate()
-        {
-            while (true)
-            {
-                WheelTransform.Rotate(new Vector3(0, 0, 1), _speed * Time.deltaTime);
-Debug.LogError($"{WheelTransform.rotation.eulerAngles.z}, {_targetAngle}");
-                if (_speed > _settings.MinSpeed)
-                {
-                    if (_slowingDown)
-                        _speed -= _settings.Resistence;
-                }
-                else if (WheelTransform.rotation.eulerAngles.z - _targetAngle < 5)
-                {
-                    onSpinningStopped?.Invoke();
-                    break;
-                }
-
-                yield return new WaitForEndOfFrame();
-            }
-        }
-    }
-
-    public interface IRouletteView
-    {
-        void Show();
-        void Hide();
-
-        void SetBalance(long balance);
-        void SetInitialWin(int win);
-        void ShowResult(int multiplier, long result);
-
-        bool CanSpin { set; }
-
-        void SubscribeOnSpinClick(Action onSpinTriggered);
-        void UnSubscribeOnSpinClick(Action onSpinTriggered);
-        void Reset();
-        void StartSpinning(int targetAngle);
-        void StopSpinning(Action onSpinningStop);
     }
 }

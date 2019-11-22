@@ -18,7 +18,7 @@ namespace PM.Roulette
                 
                 GetPlayerBalanceSignal.Fire(SignalBus).Done(() =>
                         {
-                            RouletteModel.RouletteState = ERouletteState.Start;
+                            Model.RouletteState = ERouletteState.Start;
                         },
                         exception =>
                         {

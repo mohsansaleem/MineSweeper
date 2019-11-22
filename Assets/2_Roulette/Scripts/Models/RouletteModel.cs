@@ -21,11 +21,6 @@ namespace PM.Roulette
             _resultantBalance = new ReactiveProperty<long>(0);
         }
 
-        public IDisposable SubscribeState(Action<ERouletteState> onChange)
-        {
-            return _rouletteState.Subscribe(onChange);
-        }
-
         public long Balance
         {
             get => _playerBalance.Value;
@@ -55,6 +50,23 @@ namespace PM.Roulette
             get => _rouletteState.Value;
             set => _rouletteState.Value = value;
         }
+        
+        public void ResetValues()
+        {
+            Balance = 0;
+            Multiplier = 0;
+            InitialWin = 0;
+            Multiplier = 0;
+            Result = 0;
+        }
+
+        public bool UpdateBalanceWithMultiplier()
+        {
+            Result = InitialWin * Multiplier;
+            Balance += Result;
+
+            return true;
+        }
 
         public IDisposable SubscribeBalance(Action<long> action)
         {
@@ -76,49 +88,10 @@ namespace PM.Roulette
             return _resultantBalance.Subscribe(setResult);
         }
 
-        public void ResetValues()
+        public IDisposable SubscribeState(Action<ERouletteState> onChange)
         {
-            Balance = 0;
-            Multiplier = 0;
-            InitialWin = 0;
-            Multiplier = 0;
-            Result = 0;
+            return _rouletteState.Subscribe(onChange);
         }
-
-        public bool UpdateBalanceWithMultiplier()
-        {
-            Result = InitialWin * Multiplier;
-            Balance += Result;
-
-            return true;
-        }
-    }
-
-    public interface IRouletteModel
-    {
-        long Balance { get; set; }
-        int InitialWin{ get; set; }
-        int Multiplier{ get; set; }
-        long Result{ get; }
-        
-        void ResetValues();
-        bool UpdateBalanceWithMultiplier();
-        
-        ERouletteState RouletteState { get; set; }
-        IDisposable SubscribeBalance(Action<long> action);
-        IDisposable SubscribeInitialWin(Action<int> setInitialWin);
-        IDisposable SubscribeMultiplier(Action<int> setMultiplier);
-        IDisposable SubscribeResult(Action<long> setResult);
-        IDisposable SubscribeState(Action<ERouletteState> onChange);
-    }
-    
-    public enum ERouletteState
-    {
-        Setup,
-        Start,
-        NormalReward,
-        Spinner,
-        Result
     }
 }
 

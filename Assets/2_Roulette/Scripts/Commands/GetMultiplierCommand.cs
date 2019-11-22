@@ -15,7 +15,6 @@ namespace DefaultNamespace
             _gameplayApi.GetMultiplier()
                 .Done(multiplier =>
                     {
-                        Debug.LogError("Multiplier.");
                         _rouletteModel.Multiplier = multiplier;
 
                         signal.Resolve();

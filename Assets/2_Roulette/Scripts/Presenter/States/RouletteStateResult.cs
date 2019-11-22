@@ -24,7 +24,7 @@ namespace PM.Roulette
                                     // TODO: Decide what to Do. For Now just getting on the start again.
                                     
                                     Observable.Timer(TimeSpan.FromSeconds(Settings.ResultVisibilityTime))
-                                        .Subscribe(l => RouletteModel.RouletteState = ERouletteState.Setup);
+                                        .Subscribe(l => Model.RouletteState = ERouletteState.Setup);
                                 },
                                 exception =>
                                 {

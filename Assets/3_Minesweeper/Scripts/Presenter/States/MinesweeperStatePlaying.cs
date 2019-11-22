@@ -26,27 +26,27 @@ namespace PM.Minesweeper
             {
                 UnveilEmptyCells(x, y);
 
-                if (MinesweeperModel.GetMineFieldGridCellData(x, y) == EMineFieldCellData.MINE)
+                if (Model.GetMineFieldGridCellData(x, y) == EMineFieldCellData.MINE)
                 {
                     View.ShowMessage("<Color=Red>You Hit a Mine.</Color>\n\n <b>Restart?</b>", 
-                        (() => MinesweeperModel.GameState = EGameState.Setup));
+                        (() => Model.GameState = EGameState.Setup));
                 }
                 else if(OpenedCells + Settings.MinesCount == Settings.SizeX * Settings.SizeY)
                 {
                     View.ShowMessage("<Color=Green>You won.</Color> \n\n <b>Replay?</b>", 
-                        (() => MinesweeperModel.GameState = EGameState.Setup));
+                        (() => Model.GameState = EGameState.Setup));
                 }
             }
 
             private void UnveilEmptyCells(uint x, uint y)
             {
-                if (MinesweeperModel.GetMineFieldCellOpenedStatus(x, y))
+                if (Model.GetMineFieldCellOpenedStatus(x, y))
                     return;
 
-                MinesweeperModel.SetMineFieldCellOpenedStatus(x, y, true);
+                Model.SetMineFieldCellOpenedStatus(x, y, true);
                 OpenedCells++;
                 
-                if (MinesweeperModel.GetMineFieldGridCellData(x, y) != EMineFieldCellData.M0)
+                if (Model.GetMineFieldGridCellData(x, y) != EMineFieldCellData.M0)
                     return;
 
                 for (uint r = x > 0 ? x - 1 : x; r < x + 2 && r < Settings.SizeX; r++)
@@ -66,7 +66,7 @@ namespace PM.Minesweeper
 
             private void OnCellRightClicked(uint x, uint y)
             {
-                MinesweeperModel.ToggleFlagged(x, y);
+                Model.ToggleFlagged(x, y);
             }
             
             public override void OnStateExit()

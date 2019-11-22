@@ -8,7 +8,7 @@ namespace PM.Minesweeper
         {
             protected readonly MinesweeperPresenter Presenter;
             protected readonly IMinesweeperView View;
-            protected readonly IMinesweeperModel MinesweeperModel;
+            protected readonly IMinesweeperModel Model;
             
             protected readonly MinesweeperSettingsInstaller.Settings Settings;
             
@@ -18,7 +18,7 @@ namespace PM.Minesweeper
                 this.Presenter = presenter;
                 this.View = presenter._iView;
                 
-                this.MinesweeperModel = presenter._iModel;
+                this.Model = presenter._iModel;
 
                 this.Settings = presenter._settings;
             }

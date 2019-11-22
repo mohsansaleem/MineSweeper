@@ -16,13 +16,13 @@ namespace PM.Minesweeper
                 base.OnStateEnter();
 
                 View.HideMessage();
-                MinesweeperModel.Reset(Settings.SizeX, Settings.SizeY);
+                Model.Reset(Settings.SizeX, Settings.SizeY);
                 
-                MinesweeperModel.PopulateGrid(Settings.SizeX, Settings.SizeY, Settings.MinesCount);
+                Model.PopulateGrid(Settings.SizeX, Settings.SizeY, Settings.MinesCount);
 
                 View.ShowMessage("Start Game? ", ()=>
                 {
-                    MinesweeperModel.GameState = EGameState.Playing;
+                    Model.GameState = EGameState.Playing;
                 });
             }
         }

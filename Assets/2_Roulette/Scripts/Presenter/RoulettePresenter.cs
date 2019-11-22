@@ -25,6 +25,7 @@ namespace PM.Roulette
         {
             base.Initialize();
 
+            // TODO: Perform this action with Command.
             _gameplayApi.Initialise();
             
             // Binding View and Model.

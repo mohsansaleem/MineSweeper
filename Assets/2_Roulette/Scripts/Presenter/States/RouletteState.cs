@@ -8,20 +8,16 @@ namespace PM.Roulette
         public class RouletteState : StateBehaviour
         {
             protected readonly RoulettePresenter Presenter;
-            protected readonly IRouletteModel RouletteModel;
+            protected readonly IRouletteModel Model;
             protected readonly IRouletteView View;
-            
-            protected readonly GameplayApi GameplayApi;
 
             protected readonly RouletteSettingsInstaller.Settings Settings;
             
             public RouletteState(RoulettePresenter presenter) : base(presenter)
             {
                 Presenter = presenter;
-                RouletteModel = presenter._iModel;
+                Model = presenter._iModel;
                 View = presenter._iView;
-
-                GameplayApi = presenter._gameplayApi;
 
                 Settings = presenter._settings;
             }
