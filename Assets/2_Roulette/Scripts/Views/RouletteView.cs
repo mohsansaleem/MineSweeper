@@ -100,9 +100,6 @@ namespace PM.Roulette
                 Debug.LogError($"{multiplier}: {_settings.Multipliers.IndexOf(multiplier)}");
                 _targetAngle =
                     _settings.Multipliers.IndexOf(multiplier) * 20f;
-                    
-                if(_targetAngle > 270)
-                    _targetAngle = _targetAngle - 360;
 
                 StartCoroutine(nameof(Rotate));
         }
@@ -118,13 +115,13 @@ namespace PM.Roulette
             while (true)
             {
                 WheelTransform.Rotate(new Vector3(0, 0, 1), _speed * Time.deltaTime);
-
+Debug.LogError($"{WheelTransform.rotation.eulerAngles.z}, {_targetAngle}");
                 if (_speed > _settings.MinSpeed)
                 {
                     if (_slowingDown)
                         _speed -= _settings.Resistence;
                 }
-                else if (Math.Abs(WheelTransform.rotation.eulerAngles.z % 360 - _targetAngle) < 20)
+                else if (WheelTransform.rotation.eulerAngles.z - _targetAngle < 5)
                 {
                     onSpinningStopped?.Invoke();
                     break;
