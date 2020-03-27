@@ -1,7 +1,0 @@
-D:\Documents\Visual Studio 2017\Interview Problems\MineSweeper\bin\Debug\MineSweeper.exe.config
-D:\Documents\Visual Studio 2017\Interview Problems\MineSweeper\bin\Debug\MineSweeper.exe
-D:\Documents\Visual Studio 2017\Interview Problems\MineSweeper\bin\Debug\MineSweeper.pdb
-D:\Documents\Visual Studio 2017\Interview Problems\MineSweeper\obj\Debug\MineSweeper.csprojAssemblyReference.cache
-D:\Documents\Visual Studio 2017\Interview Problems\MineSweeper\obj\Debug\MineSweeper.csproj.CoreCompileInputs.cache
-D:\Documents\Visual Studio 2017\Interview Problems\MineSweeper\obj\Debug\MineSweeper.exe
-D:\Documents\Visual Studio 2017\Interview Problems\MineSweeper\obj\Debug\MineSweeper.pdb
