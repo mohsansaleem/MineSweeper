@@ -2,7 +2,7 @@
 using UnityEngine;
 using Zenject;
 
-namespace PM.Core
+namespace PG.Core
 {
     partial class StateMachinePresenter
     {
