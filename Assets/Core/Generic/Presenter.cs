@@ -2,7 +2,7 @@
 using Zenject;
 using UniRx;
 
-namespace PM.Core.View
+namespace PG.Core.View
 {
     public abstract class Presenter : IInitializable, IDisposable
     {

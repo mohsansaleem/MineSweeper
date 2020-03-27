@@ -1,6 +1,6 @@
 ﻿using Zenject;
 
-namespace PM.Core.Installer
+namespace PG.Core.Installer
 {
     public class CoreContextInstaller : MonoInstaller<CoreContextInstaller>
     {

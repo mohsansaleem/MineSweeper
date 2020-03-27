@@ -5,6 +5,7 @@ using System.Linq;
 using ModestTree;
 using UnityEditor;
 using UnityEditor.Compilation;
+using UnityEngine;
 using Zenject.ReflectionBaking.Mono.Cecil;
 using Debug = UnityEngine.Debug;
 

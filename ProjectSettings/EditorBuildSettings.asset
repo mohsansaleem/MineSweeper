@@ -6,9 +6,9 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/2_Roulette/Roulette.unity
-    guid: 02c3d1de8a8ac3647ad1839ac7aa0f21
-  - enabled: 1
-    path: Assets/3_Minesweeper/Minesweeper.unity
+    path: Assets/Minesweeper/Minesweeper.unity
     guid: 3009b88206b41df4db77d008c350415a
+  - enabled: 1
+    path: Assets/Roulette/Roulette.unity
+    guid: 02c3d1de8a8ac3647ad1839ac7aa0f21
   m_configObjects: {}

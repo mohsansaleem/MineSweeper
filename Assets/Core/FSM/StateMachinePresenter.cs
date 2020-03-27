@@ -4,28 +4,35 @@ using Zenject;
 using UniRx;
 using UnityEngine;
 
-namespace PM.Core
+namespace PG.Core
 {
     public partial class StateMachinePresenter : IInitializable, ITickable, IDisposable
     {
         protected StateBehaviour CurrentStateBehaviour;
-        protected Dictionary<Type, StateBehaviour> StateBehaviours = new Dictionary<Type, StateBehaviour>();
+        protected Dictionary<int, StateBehaviour> StateBehaviours = new Dictionary<int, StateBehaviour>();
         
         protected CompositeDisposable Disposables;
 
         [Inject] protected readonly SignalBus SignalBus;
 
-        public StateMachinePresenter()
-        {
-            //Disposables = new CompositeDisposable();
-        }
-        
         public virtual void Initialize()
 		{
             Disposables = new CompositeDisposable();
         }
 
-        public virtual void GoToState(Type stateType)
+        public virtual void GoToState(int stateType)
+        {
+            if (!StateBehaviours.ContainsKey(stateType))
+            {
+                Debug.LogError("State Missing in Mediator.");
+            }
+            else if(CurrentStateBehaviour == null || StateBehaviours[stateType] != CurrentStateBehaviour)
+            {
+                GoToStateInternal(stateType);
+            }
+        }
+        
+        private void GoToStateInternal(int stateType)
         {
             if (StateBehaviours.ContainsKey(stateType))
             {
@@ -39,7 +46,7 @@ namespace PM.Core
             }
             else
             {
-                Debug.LogError($"State[{stateType.Name}] doesn't Exist in the Dictionary.");
+                Debug.LogError($"State Id[{stateType}] doesn't Exist in the Dictionary.");
             }
         }
 
