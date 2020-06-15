@@ -3,7 +3,7 @@ using Server.API;
 using UnityEngine;
 using Zenject;
 
-namespace DefaultNamespace
+namespace PG.Roulette
 {
     public class GetMultiplierCommand
     {

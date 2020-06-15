@@ -3,16 +3,7 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags:
-  - Bubble
-  - BG Water
-  - Arrow
-  - Dark
-  - Wall
-  - End
-  - ActiveRange
-  - DarkArrow
-  - Reflector
+  tags: []
   layers:
   - Default
   - TransparentFX
@@ -22,11 +13,11 @@ TagManager:
   - UI
   - 
   - 
-  - Background
-  - GamePlay
-  - TopLayer
-  - Range
-  - Player
+  - 
+  - 
+  - 
+  - 
+  - 
   - 
   - 
   - 
@@ -49,13 +40,4 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
-    locked: 0
-  - name: Background
-    uniqueID: 1230799649
-    locked: 0
-  - name: GamePlay
-    uniqueID: 719208513
-    locked: 0
-  - name: TopLayer
-    uniqueID: 2144234955
     locked: 0
